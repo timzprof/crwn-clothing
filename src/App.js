@@ -9,22 +9,34 @@ import Homepage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import AuthPage from "./pages/auth/auth.component";
 
-import {auth} from "./firebase/firebase.util";
+import {auth, createUserProfileDocument} from "./firebase/firebase.util";
 
 class App extends React.Component {
 	state = {
-		currentUser: null
-	}
+		currentUser: null,
+	};
 
 	unsuscribeFromAuth = null;
 
 	componentDidMount() {
-		this.unsuscribeFromAuth = auth.onAuthStateChanged(user => {
-			this.setState({ currentUser: user});
+		this.unsuscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+			if (userAuth) {
+				const userRef = await createUserProfileDocument(userAuth);
+				userRef.onSnapshot((snapshot) => {
+					this.setState({
+						currentUser: {
+							id: snapshot.id,
+							...snapshot.data(),
+						},
+					});
+				});
+			} else {
+				this.setState({ currentUser: null });
+			}
 		});
 	}
 
-	componentWillUnmount(){
+	componentWillUnmount() {
 		this.unsuscribeFromAuth();
 	}
 
