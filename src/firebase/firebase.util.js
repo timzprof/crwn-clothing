@@ -22,6 +22,15 @@ export const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 googleProvider.setCustomParameters({ prompt: "select_account" });
 
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsuscribe = auth.onAuthStateChanged((userAuth) => {
+      unsuscribe();
+      resolve(userAuth);
+    }, reject);
+  });
+};
+
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
