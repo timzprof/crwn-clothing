@@ -5,7 +5,7 @@ import { createStructuredSelector } from "reselect";
 // import jsPDF from "jspdf";
 // import html2canvas from "html2canvas";
 
-import "./App.css";
+import { GlobalStyle } from './global.styles';
 
 import Header from "./components/header/header.component";
 
@@ -34,6 +34,7 @@ const App = ({ currentUser, checkUserSession }) => {
 
   return (
     <div>
+      <GlobalStyle />
       <Header />
       <Switch>
         <Route exact path="/" component={Homepage} />

@@ -6,6 +6,11 @@
   align-items: center;
   margin: 50px auto 0;
 
+  @media screen and (max-width: 800px){
+    margin: 20px;
+    width: unset;
+  }
+
   .checkout-header {
     width: 100%;
     padding: 10px 0;
