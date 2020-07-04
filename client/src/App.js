@@ -1,49 +1,45 @@
-import React, { useEffect } from "react";
+import React, { useEffect, lazy, Suspense } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 // import jsPDF from "jspdf";
 // import html2canvas from "html2canvas";
 
-import { GlobalStyle } from './global.styles';
+import { GlobalStyle } from "./global.styles";
 
 import Header from "./components/header/header.component";
-
-import Homepage from "./pages/homepage/homepage.component";
-import ShopPage from "./pages/shop/shop.component";
-import AuthPage from "./pages/auth/auth.component";
-import CheckoutPage from "./pages/checkout/checkout.component";
+import Spinner from "./components/spinner/spinner.component";
+import ErrorBoundary from "./components/error-boundary/error-boundary";
 
 import { checkUserSession } from "./redux/user/user.actions";
 import { selectCurrentUser } from "./redux/user/user.selectors";
+
+const Homepage = lazy(() => import("./pages/homepage/homepage.component"));
+const ShopPage = lazy(() => import("./pages/shop/shop.component"));
+const AuthPage = lazy(() => import("./pages/auth/auth.component"));
+const CheckoutPage = lazy(() => import("./pages/checkout/checkout.component"));
 
 const App = ({ currentUser, checkUserSession }) => {
   useEffect(() => {
     checkUserSession();
   }, [checkUserSession]);
 
-  // const handlePdfDownload = () => {
-  //   const root = document.getElementById("root");
-  //   html2canvas(root).then((canvas) => {
-  //     const imgData = canvas.toDataURL("image/png");
-  //     const pdf = new jsPDF();
-  //     pdf.addImage(imgData, "PNG", 0, 0);
-  //     pdf.save("page.pdf");
-  //   });
-  // };
-
   return (
     <div>
       <GlobalStyle />
       <Header />
       <Switch>
-        <Route exact path="/" component={Homepage} />
-        <Route path="/shop" component={ShopPage} />
-        <Route exact path="/checkout" component={CheckoutPage} />
-        <Route
-          path="/signin"
-          render={() => (currentUser ? <Redirect to="/" /> : <AuthPage />)}
-        />
+        <ErrorBoundary>
+          <Suspense fallback={<Spinner />}>
+            <Route exact path="/" component={Homepage} />
+            <Route path="/shop" component={ShopPage} />
+            <Route exact path="/checkout" component={CheckoutPage} />
+            <Route
+              path="/signin"
+              render={() => (currentUser ? <Redirect to="/" /> : <AuthPage />)}
+            />
+          </Suspense>
+        </ErrorBoundary>
       </Switch>
     </div>
   );
